@@ -63,6 +63,8 @@ public class User extends IdEntity<User> {
 	private String userType;// 用户类型
 	private String loginIp;	// 最后登陆IP
 	private Date loginDate;	// 最后登陆日期
+	private String carNum; //车牌号码
+	private String image; //头像
 	
 	private List<Role> roleList = Lists.newArrayList(); // 拥有角色列表
 
@@ -267,8 +269,24 @@ public class User extends IdEntity<User> {
 	public static boolean isAdmin(String id){
 		return id != null && id.equals("1");
 	}
-	
-//	@Override
+
+	public String getCarNum() {
+		return carNum;
+	}
+
+	public void setCarNum(String carNum) {
+		this.carNum = carNum;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	//	@Override
 //	public String toString() {
 //		return ToStringBuilder.reflectionToString(this);
 //	}

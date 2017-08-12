@@ -51,7 +51,7 @@ public class ${ClassName}Controller extends BaseController {
 		}
 	}
 
-	@RequiresPermissions("${permissionPrefix}:view")
+	//@RequiresPermissions("${permissionPrefix}:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(${ClassName} ${className}, HttpServletRequest request, HttpServletResponse response, Model model) {
 		User user = UserUtils.getUser();
@@ -63,25 +63,25 @@ public class ${ClassName}Controller extends BaseController {
 		return "modules/" + "${viewPrefix}List";
 	}
 
-	@RequiresPermissions("${permissionPrefix}:view")
+	//@RequiresPermissions("${permissionPrefix}:view")
 	@RequestMapping(value = "form")
 	public String form(${ClassName} ${className}, Model model) {
 		model.addAttribute("${className}", ${className});
 		return "modules/" + "${viewPrefix}Form";
 	}
 
-	@RequiresPermissions("${permissionPrefix}:edit")
+	//@RequiresPermissions("${permissionPrefix}:edit")
 	@RequestMapping(value = "save")
 	public String save(${ClassName} ${className}, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, ${className})){
 			return form(${className}, model);
 		}
 		${className}Service.save(${className});
-		addMessage(redirectAttributes, "保存${functionName}'" + ${className}.getName() + "'成功");
+		//addMessage(redirectAttributes, "保存${functionName}'" + ${className}.getName() + "'成功");
 		return "redirect:"+Global.getAdminPath()+"/${viewPrefix}/?repage";
 	}
 
-	@RequiresPermissions("${permissionPrefix}:edit")
+	//@RequiresPermissions("${permissionPrefix}:edit")
 	@RequestMapping(value = "delete")
 	public String delete(String id, RedirectAttributes redirectAttributes) {
 		${className}Service.delete(id);

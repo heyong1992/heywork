@@ -25,7 +25,8 @@
 				/static/** = anon
 				/userfiles/** = anon
 				${adminPath}/login = authc
-				${adminPath}/loginnn = authc
+				${adminPath}/terminal/** = anon
+				${adminPath}/login = authc
 				${adminPath}/logout = logout
 				${adminPath}/** = user
 		 	</value>

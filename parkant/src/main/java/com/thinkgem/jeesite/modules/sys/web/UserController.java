@@ -291,7 +291,6 @@ public class UserController extends BaseController {
 		model.addAttribute("user", user);
 		return "modules/sys/userModifyPwd";
 	}
-    
 //	@InitBinder
 //	public void initBinder(WebDataBinder b) {
 //		b.registerCustomEditor(List.class, "roleList", new PropertyEditorSupport(){
