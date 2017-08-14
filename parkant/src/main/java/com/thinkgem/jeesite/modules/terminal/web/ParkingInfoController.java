@@ -4,6 +4,10 @@
 package com.thinkgem.jeesite.modules.terminal.web;
 
 
+import com.thinkgem.jeesite.modules.terminal.entity.CarSeatInfo;
+import com.thinkgem.jeesite.modules.terminal.service.CarSeatInfoService;
+import com.thinkgem.jeesite.modules.terminal.vo.CarSeatVo;
+import com.thinkgem.jeesite.modules.terminal.vo.ReturnVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +26,7 @@ import com.thinkgem.jeesite.modules.terminal.service.ParkingInfoService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 停车信息Controller
@@ -35,6 +40,9 @@ public class ParkingInfoController extends BaseController {
 	@Autowired
 	private ParkingInfoService parkingInfoService;
 
+	@Autowired
+	private CarSeatInfoService carSeatInfoService;
+
 	@ModelAttribute
 	public ParkingInfo get(@RequestParam(required=false) String id) {
 		if (StringUtils.isNotBlank(id)){
@@ -44,34 +52,80 @@ public class ParkingInfoController extends BaseController {
 		}
 	}
 
+	/**
+	 * 获取停车场列表
+	 * @param lot 经度
+	 * @param lat 纬度
+	 */
 	@RequestMapping(value = "list")
 	@ResponseBody
-	public List<ParkingInfo> list(String lot, String lat, HttpServletRequest request, HttpServletResponse response) {
-		User user = UserUtils.getUser();
+	public ReturnVo list(String lot, String lat, HttpServletRequest request, HttpServletResponse response) {
+		ReturnVo returnVo=new ReturnVo();
         Page<ParkingInfo> page = parkingInfoService.find(new Page<ParkingInfo>(request, response), null);
-		return page.getList();
+		returnVo.setList(page.getList());
+		return returnVo;
 	}
 
-	@RequestMapping(value = "form")
-	public String form(ParkingInfo parkingInfo, Model model) {
-		model.addAttribute("parkingInfo", parkingInfo);
-		return "modules/" + "parkinfo/parkingInfoForm";
-	}
-
-	@RequestMapping(value = "save")
-	public String save(ParkingInfo parkingInfo, Model model, RedirectAttributes redirectAttributes) {
+	/**
+	 * 停车场录入
+	 */
+	@RequestMapping(value = "create",method=RequestMethod.POST)
+	@ResponseBody
+	public ReturnVo create(ParkingInfo parkingInfo, Model model) {
+		ReturnVo returnVo=new ReturnVo();
 		if (!beanValidator(model, parkingInfo)){
-			return form(parkingInfo, model);
+			returnVo.setSuccess("false");
+			returnVo.setReason("参数格式不正确");
+			return returnVo;
 		}
 		parkingInfoService.save(parkingInfo);
-		return "redirect:"+Global.getAdminPath()+"/parkinfo/parkingInfo/?repage";
+		User user = UserUtils.getUser();
+		returnVo.setSuccess("true");
+		returnVo.setReason("入驻成功");
+		return returnVo;
 	}
 
-	@RequestMapping(value = "delete")
-	public String delete(String id, RedirectAttributes redirectAttributes) {
-		parkingInfoService.delete(id);
+
+	/**
+	 * 车位录入
+	 */
+	@RequestMapping(value = "carseatCreate",method=RequestMethod.POST)
+	@ResponseBody
+	public ReturnVo carseatCreate(CarSeatInfo carSeatInfo, Model model) {
+		ReturnVo returnVo=new ReturnVo();
+		carSeatInfoService.save(carSeatInfo);
+		returnVo.setSuccess("true");
+		returnVo.setReason("入驻成功");
+		return returnVo;
+	}
+
+
+	/**
+	 * 获取停车场车位列表
+	 */
+	@RequestMapping(value = "carSeatList")
+	@ResponseBody
+	public ReturnVo carSeatList(CarSeatInfo carSeatInfo, HttpServletRequest request, HttpServletResponse response) {
+		ReturnVo returnVo=new ReturnVo();
+		Page<CarSeatInfo> page = carSeatInfoService.find(new Page<CarSeatInfo>(request, response), carSeatInfo);
+		CarSeatVo carSeatVo=new CarSeatVo();
+		returnVo.setList(page.getList());
+		return returnVo;
+	}
+
+	/**
+	 * 车位解绑
+	 */
+	@RequestMapping(value = "deleteCarSeat")
+	@ResponseBody
+	public ReturnVo deleteCarSeat(String id, RedirectAttributes redirectAttributes) {
+		ReturnVo returnVo=new ReturnVo();
+		carSeatInfoService.delete(id);
+		// RedirectAttributes 专门用于重定向之后还能带参数跳转的
 		addMessage(redirectAttributes, "删除停车信息成功");
-		return "redirect:"+Global.getAdminPath()+"/parkinfo/parkingInfo/?repage";
+		returnVo.setSuccess("true");
+		returnVo.setReason("入驻成功");
+		return returnVo;
 	}
 
 }

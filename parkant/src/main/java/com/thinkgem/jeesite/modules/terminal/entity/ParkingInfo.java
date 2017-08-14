@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.terminal.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -23,11 +24,13 @@ import com.thinkgem.jeesite.common.persistence.IdEntity;
 public class ParkingInfo extends IdEntity<ParkingInfo> {
 	/**
 	 *收费标准
-	 */ 
+	 */
+	@Column(name="s_desc")
 	private String sDesc;
 	/**
 	 *停车场名称
-	 */ 
+	 */
+	@Column(name="s_name")
 	private String sName;
 	/**
 	 *所属省份
