@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.terminal.service;
 
+import com.thinkgem.jeesite.modules.terminal.vo.CarSeatVo;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -15,6 +16,9 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.modules.terminal.entity.CarSeatInfo;
 import com.thinkgem.jeesite.modules.terminal.dao.CarSeatInfoDao;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 车位信息Service
@@ -50,6 +54,18 @@ public class CarSeatInfoService extends BaseService {
 	@Transactional(readOnly = false)
 	public void delete(String id) {
 		carSeatInfoDao.deleteById(id);
+	}
+
+	public List<CarSeatVo> carSeatInfoConvertVo(List<CarSeatInfo> carSeatInfos){
+		List<CarSeatVo> carSeatVos=new ArrayList<CarSeatVo>();
+		CarSeatVo carSeatVo;
+		for(CarSeatInfo carSeatInfo:carSeatInfos){
+			carSeatVo=new CarSeatVo();
+			carSeatVo.setId(carSeatInfo.getId());
+			carSeatVo.setName(carSeatInfo.getCarSeatName());
+			carSeatVos.add(carSeatVo);
+		}
+		return carSeatVos;
 	}
 
 }

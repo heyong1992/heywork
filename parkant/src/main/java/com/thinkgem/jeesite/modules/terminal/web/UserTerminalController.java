@@ -25,6 +25,9 @@ public class UserTerminalController extends BaseController {
     @Autowired
     private SystemService systemService;
 
+    /**
+     * 创建用户
+     */
     @RequestMapping("create")
     @ResponseBody
     public Map<String,String> create(User user) {
@@ -34,10 +37,7 @@ public class UserTerminalController extends BaseController {
             map.put("success","false");
             map.put("reason","保存用户'" + user.getLoginName() + "'失败，登录名已存在");
             return map;
-            //addMessage(model, "保存用户'" + user.getLoginName() + "'失败，登录名已存在");
-            //return form(user, model);
         }
-
         user.setCompany(new Office("1"));
         user.setOffice(new Office("1"));
         //加密
@@ -48,6 +48,9 @@ public class UserTerminalController extends BaseController {
         return map;
     }
 
+    /**
+     * 用户登录
+     */
     @RequestMapping("login")
     @ResponseBody
     public Map<String,Object> login(User user) {

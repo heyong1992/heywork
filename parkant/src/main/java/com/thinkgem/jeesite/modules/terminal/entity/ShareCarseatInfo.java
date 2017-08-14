@@ -56,8 +56,6 @@ public class ShareCarseatInfo extends IdEntity<ShareCarseatInfo> {
 	@Column(name="user_id")
 	private User user;
 
-
-
 	public ShareCarseatInfo() {
 		super();
 	}
@@ -67,7 +65,6 @@ public class ShareCarseatInfo extends IdEntity<ShareCarseatInfo> {
 		this.id = id;
 	}
 
-	@Length(min=0, max=11, message="允许超过时间（分钟）长度必须介于 0 和 11 之间")
 	public String getOvertime() {
 		return overtime;
 	}
@@ -76,7 +73,6 @@ public class ShareCarseatInfo extends IdEntity<ShareCarseatInfo> {
 		this.overtime = overtime;
 	}
 
-	@Length(min=0, max=64, message="车位ID长度必须介于 0 和 64 之间")
 	@ManyToOne
 	@JoinColumn(name = "car_seat_id")
 	public CarSeatInfo getCarSeat() {
@@ -87,7 +83,6 @@ public class ShareCarseatInfo extends IdEntity<ShareCarseatInfo> {
 		this.carSeat = carSeat;
 	}
 
-	@Length(min=0, max=11, message="是否已共享长度必须介于 0 和 11 之间")
 	public String getIsShare() {
 		return isShare;
 	}
@@ -96,8 +91,6 @@ public class ShareCarseatInfo extends IdEntity<ShareCarseatInfo> {
 		this.isShare = isShare;
 	}
 
-
-	@Length(min=0, max=64, message="停车场ID长度必须介于 0 和 64 之间")
 	@ManyToOne
 	@JoinColumn(name = "parking_id")
 	public ParkingInfo getParking() {
@@ -126,7 +119,6 @@ public class ShareCarseatInfo extends IdEntity<ShareCarseatInfo> {
 		this.startTime = startTime;
 	}
 
-	@Length(min=0, max=64, message="发布人ID长度必须介于 0 和 64 之间")
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	public User getUser() {

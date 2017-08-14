@@ -98,7 +98,6 @@ public class OrderInfo extends IdEntity<OrderInfo> {
 	}
 
 
-	@Length(min=0, max=11, message="订单状态长度必须介于 0 和 11 之间")
 	public String getStatus() {
 		return status;
 	}
@@ -107,7 +106,6 @@ public class OrderInfo extends IdEntity<OrderInfo> {
 		this.status = status;
 	}
 
-	@Length(min=0, max=64, message="使用者ID长度必须介于 0 和 64 之间")
 	@ManyToOne
 	@JoinColumn(name = "use_id")
 	public User getUse() {
@@ -118,7 +116,6 @@ public class OrderInfo extends IdEntity<OrderInfo> {
 		this.use = use;
 	}
 
-	@Length(min=0, max=64, message="共享车位ID长度必须介于 0 和 64 之间")
 	@ManyToOne
 	@JoinColumn(name = "share_id")
 	public ShareCarseatInfo getShareCarseatInfo() {
@@ -147,7 +144,6 @@ public class OrderInfo extends IdEntity<OrderInfo> {
 		this.payId = payId;
 	}
 
-	@Length(min=0, max=64, message="拥有者ID长度必须介于 0 和 64 之间")
 	@ManyToOne
 	@JoinColumn(name = "have_id")
 	public User getHaver() {

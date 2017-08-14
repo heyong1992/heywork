@@ -6,12 +6,14 @@ package com.thinkgem.jeesite.modules.terminal.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.modules.terminal.vo.ReturnVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -23,19 +25,26 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.terminal.entity.OrderInfo;
 import com.thinkgem.jeesite.modules.terminal.service.OrderInfoService;
 
+import java.util.List;
+
 /**
  * 订单信息Controller
  * @author Hey
  * @version 2017-08-14
  */
 @Controller
-@RequestMapping(value = "${adminPath}/orderinfo/orderInfo")
+@RequestMapping(value = "${adminPath}/terminal/orderInfo")
 public class OrderInfoController extends BaseController {
 
 	@Autowired
 	private OrderInfoService orderInfoService;
 
-	@ModelAttribute
+	/**
+	 * 获取订单详情
+	 * @param id 订单id
+	 */
+	@RequestMapping(value = "get")
+	@ResponseBody
 	public OrderInfo get(@RequestParam(required=false) String id) {
 		if (StringUtils.isNotBlank(id)){
 			return orderInfoService.get(id);
@@ -43,43 +52,30 @@ public class OrderInfoController extends BaseController {
 			return new OrderInfo();
 		}
 	}
-
-	//@RequiresPermissions("orderinfo:orderInfo:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
-		User user = UserUtils.getUser();
-		if (!user.isAdmin()){
-			orderInfo.setCreateBy(user);
-		}
+	/**
+	 * 查询订单列表
+	 * @param orderInfo
+	 */
+	@RequestMapping(value = "list")
+	@ResponseBody
+	public List<OrderInfo> list(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
         Page<OrderInfo> page = orderInfoService.find(new Page<OrderInfo>(request, response), orderInfo);
-        model.addAttribute("page", page);
-		return "modules/" + "orderinfo/orderInfoList";
+		return page.getList();
 	}
 
-	//@RequiresPermissions("orderinfo:orderInfo:view")
-	@RequestMapping(value = "form")
-	public String form(OrderInfo orderInfo, Model model) {
-		model.addAttribute("orderInfo", orderInfo);
-		return "modules/" + "orderinfo/orderInfoForm";
-	}
-
-	//@RequiresPermissions("orderinfo:orderInfo:edit")
-	@RequestMapping(value = "save")
-	public String save(OrderInfo orderInfo, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, orderInfo)){
-			return form(orderInfo, model);
-		}
+	/**
+	 * 创建订单
+	 * @param orderInfo
+	 */
+	@RequestMapping(value = "create")
+	@ResponseBody
+	public ReturnVo create(OrderInfo orderInfo, Model model, RedirectAttributes redirectAttributes) {
 		orderInfoService.save(orderInfo);
-		//addMessage(redirectAttributes, "保存订单信息'" + orderInfo.getName() + "'成功");
-		return "redirect:"+Global.getAdminPath()+"/orderinfo/orderInfo/?repage";
+		ReturnVo returnVo=new ReturnVo();
+		returnVo.setSuccess("true");
+		returnVo.setReason("发布成功");
+		return returnVo;
 	}
 
-	//@RequiresPermissions("orderinfo:orderInfo:edit")
-	@RequestMapping(value = "delete")
-	public String delete(String id, RedirectAttributes redirectAttributes) {
-		orderInfoService.delete(id);
-		addMessage(redirectAttributes, "删除订单信息成功");
-		return "redirect:"+Global.getAdminPath()+"/orderinfo/orderInfo/?repage";
-	}
 
 }

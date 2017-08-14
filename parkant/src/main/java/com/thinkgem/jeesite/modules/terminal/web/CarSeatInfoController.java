@@ -6,12 +6,15 @@ package com.thinkgem.jeesite.modules.terminal.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.modules.terminal.vo.CarSeatVo;
+import com.thinkgem.jeesite.modules.terminal.vo.ReturnVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -23,13 +26,15 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.terminal.entity.CarSeatInfo;
 import com.thinkgem.jeesite.modules.terminal.service.CarSeatInfoService;
 
+import java.util.List;
+
 /**
  * 车位信息Controller
  * @author Hey
  * @version 2017-08-14
  */
 @Controller
-@RequestMapping(value = "${adminPath}/carseatinfo/carSeatInfo")
+@RequestMapping(value = "${adminPath}/terminal/carSeatInfo")
 public class CarSeatInfoController extends BaseController {
 
 	@Autowired
@@ -44,42 +49,41 @@ public class CarSeatInfoController extends BaseController {
 		}
 	}
 
-	//@RequiresPermissions("carseatinfo:carSeatInfo:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(CarSeatInfo carSeatInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
-		User user = UserUtils.getUser();
-		if (!user.isAdmin()){
-			carSeatInfo.setCreateBy(user);
-		}
+	/**
+	 * 查询用户车辆
+	 *  param :user 拥有人
+	 */
+	@RequestMapping(value ="list")
+	@ResponseBody
+	public List<CarSeatVo> list(CarSeatInfo carSeatInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
         Page<CarSeatInfo> page = carSeatInfoService.find(new Page<CarSeatInfo>(request, response), carSeatInfo);
-        model.addAttribute("page", page);
-		return "modules/" + "carseatinfo/carSeatInfoList";
+		return carSeatInfoService.carSeatInfoConvertVo(page.getList());
 	}
 
-	//@RequiresPermissions("carseatinfo:carSeatInfo:view")
-	@RequestMapping(value = "form")
-	public String form(CarSeatInfo carSeatInfo, Model model) {
-		model.addAttribute("carSeatInfo", carSeatInfo);
-		return "modules/" + "carseatinfo/carSeatInfoForm";
-	}
-
-	//@RequiresPermissions("carseatinfo:carSeatInfo:edit")
-	@RequestMapping(value = "save")
-	public String save(CarSeatInfo carSeatInfo, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, carSeatInfo)){
-			return form(carSeatInfo, model);
-		}
+	/**
+	 * 绑定或更新用户车辆
+	 */
+	@RequestMapping(value = "create")
+	@ResponseBody
+	public ReturnVo create(CarSeatInfo carSeatInfo, Model model, RedirectAttributes redirectAttributes) {
 		carSeatInfoService.save(carSeatInfo);
-		//addMessage(redirectAttributes, "保存车位信息'" + carSeatInfo.getName() + "'成功");
-		return "redirect:"+Global.getAdminPath()+"/carseatinfo/carSeatInfo/?repage";
+		ReturnVo returnVo=new ReturnVo();
+		returnVo.setSuccess("true");
+		returnVo.setReason("绑定成功");
+		return returnVo;
 	}
 
-	//@RequiresPermissions("carseatinfo:carSeatInfo:edit")
+	/**
+	 * 解绑用户车辆
+	 */
 	@RequestMapping(value = "delete")
-	public String delete(String id, RedirectAttributes redirectAttributes) {
+	@ResponseBody
+	public ReturnVo delete(String id, RedirectAttributes redirectAttributes) {
 		carSeatInfoService.delete(id);
-		addMessage(redirectAttributes, "删除车位信息成功");
-		return "redirect:"+Global.getAdminPath()+"/carseatinfo/carSeatInfo/?repage";
+		ReturnVo returnVo=new ReturnVo();
+		returnVo.setSuccess("true");
+		returnVo.setReason("解绑成功");
+		return returnVo;
 	}
 
 }

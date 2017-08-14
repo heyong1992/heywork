@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.terminal.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -33,9 +34,9 @@ public class ShareCarseatInfoService extends BaseService {
 
 	public Page<ShareCarseatInfo> find(Page<ShareCarseatInfo> page, ShareCarseatInfo shareCarseatInfo) {
 		DetachedCriteria dc = shareCarseatInfoDao.createDetachedCriteria();
-		//if (StringUtils.isNotEmpty(shareCarseatInfo.getName())){
-			//dc.add(Restrictions.like("name", "%"+shareCarseatInfo.getName()+"%"));
-		//}
+		if (StringUtils.isNotEmpty(shareCarseatInfo.getParking().getId())){
+			dc.add(Restrictions.eq("parking.id", shareCarseatInfo.getParking().getId()));
+		}
 		dc.add(Restrictions.eq(ShareCarseatInfo.FIELD_DEL_FLAG, ShareCarseatInfo.DEL_FLAG_NORMAL));
 		dc.addOrder(Order.desc("id"));
 		return shareCarseatInfoDao.find(page, dc);
