@@ -34,7 +34,7 @@ public class CarSeatInfo extends IdEntity<CarSeatInfo> {
 	 *停车场ID
 	 */
 	@Column(name="parking_id")
-	private ParkingInfo parkingInfo;
+	private ParkingInfo parking;
 	/**
 	 *车位锁编号
 	 */ 
@@ -77,11 +77,11 @@ public class CarSeatInfo extends IdEntity<CarSeatInfo> {
 
 	@ManyToOne
 	@JoinColumn(name = "parking_id")
-	public ParkingInfo getParkingInfo() {
-		return parkingInfo;
+	public ParkingInfo getParking() {
+		return parking;
 	}
 
-	public void setParkingInfo(ParkingInfo parkingInfo) {
-		this.parkingInfo = parkingInfo;
+	public void setParking(ParkingInfo parking) {
+		this.parking = parking;
 	}
 }

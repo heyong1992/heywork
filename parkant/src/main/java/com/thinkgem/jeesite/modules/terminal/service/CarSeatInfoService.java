@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.terminal.service;
 
+import com.thinkgem.jeesite.common.persistence.Parameter;
 import com.thinkgem.jeesite.modules.terminal.vo.CarSeatVo;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
@@ -38,13 +39,18 @@ public class CarSeatInfoService extends BaseService {
 
 	public Page<CarSeatInfo> find(Page<CarSeatInfo> page, CarSeatInfo carSeatInfo) {
 		DetachedCriteria dc = carSeatInfoDao.createDetachedCriteria();
-		if (StringUtils.isNotEmpty(carSeatInfo.getParkingInfo().getId())){
-			dc.add(Restrictions.eq("parkingInfo.id", carSeatInfo.getParkingInfo().getId()));
+		if (carSeatInfo.getParking()!=null){
+			dc.add(Restrictions.eq("parkingInfo.id", carSeatInfo.getParking().getId()));
+		}
+		if (carSeatInfo.getUser()!=null){
+			dc.add(Restrictions.eq("user.id", carSeatInfo.getUser().getId()));
 		}
 		dc.add(Restrictions.eq(CarSeatInfo.FIELD_DEL_FLAG, CarSeatInfo.DEL_FLAG_NORMAL));
 		dc.addOrder(Order.desc("id"));
 		return carSeatInfoDao.find(page, dc);
 	}
+
+
 
 	@Transactional(readOnly = false)
 	public void save(CarSeatInfo carSeatInfo) {
@@ -56,6 +62,12 @@ public class CarSeatInfoService extends BaseService {
 		carSeatInfoDao.deleteById(id);
 	}
 
+	public CarSeatInfo findByPuid(CarSeatInfo c) {
+		String hql="from CarSeatInfo c where c.deviceNum=:p1 or (c.carSeatName=:p2 and c.parking.id=:p3)";
+		CarSeatInfo carSeatInfo=carSeatInfoDao.getByHql(hql,new Parameter(c.getDeviceNum(),c.getCarSeatName(),c.getParking().getId()));
+		return carSeatInfo;
+	}
+
 	public List<CarSeatVo> carSeatInfoConvertVo(List<CarSeatInfo> carSeatInfos){
 		List<CarSeatVo> carSeatVos=new ArrayList<CarSeatVo>();
 		CarSeatVo carSeatVo;
@@ -63,6 +75,7 @@ public class CarSeatInfoService extends BaseService {
 			carSeatVo=new CarSeatVo();
 			carSeatVo.setId(carSeatInfo.getId());
 			carSeatVo.setName(carSeatInfo.getCarSeatName());
+			carSeatVo.setParkName(carSeatInfo.getParking().getSName());
 			carSeatVos.add(carSeatVo);
 		}
 		return carSeatVos;

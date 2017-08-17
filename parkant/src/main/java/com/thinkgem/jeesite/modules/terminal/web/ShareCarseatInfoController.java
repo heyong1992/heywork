@@ -6,7 +6,11 @@ package com.thinkgem.jeesite.modules.terminal.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.modules.terminal.entity.CarSeatInfo;
+import com.thinkgem.jeesite.modules.terminal.service.CarSeatInfoService;
 import com.thinkgem.jeesite.modules.terminal.vo.ReturnVo;
+import com.thinkgem.jeesite.modules.terminal.vo.ShareCarSeatVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +29,7 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.terminal.entity.ShareCarseatInfo;
 import com.thinkgem.jeesite.modules.terminal.service.ShareCarseatInfoService;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,11 +38,14 @@ import java.util.List;
  * @version 2017-08-14
  */
 @Controller
-@RequestMapping(value = "${adminPath}/terminal/shareCarseat")
+@RequestMapping(value = "${adminPath}/terminal/shareCarSeat")
 public class ShareCarseatInfoController extends BaseController {
 
 	@Autowired
 	private ShareCarseatInfoService shareCarseatInfoService;
+
+	@Autowired
+	private CarSeatInfoService carSeatInfoService;
 
 
 	/**
@@ -57,8 +65,23 @@ public class ShareCarseatInfoController extends BaseController {
 	 */
 	@RequestMapping(value = "create")
 	@ResponseBody
-	public ReturnVo create(ShareCarseatInfo shareCarseatInfo, Model model, RedirectAttributes redirectAttributes) {
+	public ReturnVo create(ShareCarseatInfo shareCarseatInfo,String startDate,String endDate, Model model, RedirectAttributes redirectAttributes) {
+
 		ReturnVo returnVo=new ReturnVo();
+		ShareCarseatInfo shareCarseatInfo1=shareCarseatInfoService.findByCid(shareCarseatInfo.getCarSeat().getId());
+		if(shareCarseatInfo1!=null){
+			returnVo.setSuccess("false");
+			returnVo.setReason("发布失败:该车位已共享");
+			return returnVo;
+		}
+		User u = UserUtils.getUser();
+		shareCarseatInfo.setUser(u);
+		shareCarseatInfo.setStartTime(new Date(startDate));
+		shareCarseatInfo.setEndTime(new Date(endDate));
+		//设置停车场ID
+		CarSeatInfo carSeatInfo=carSeatInfoService.get(shareCarseatInfo.getCarSeat().getId());
+		shareCarseatInfo.setParking(carSeatInfo.getParking());
+
 		returnVo.setSuccess("true");
 		returnVo.setReason("发布成功");
 		shareCarseatInfoService.save(shareCarseatInfo);
@@ -70,9 +93,9 @@ public class ShareCarseatInfoController extends BaseController {
 	 */
 	@RequestMapping(value = "list")
 	@ResponseBody
-	public List<ShareCarseatInfo> list(ShareCarseatInfo shareCarseatInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
+	public List<ShareCarSeatVo> list(ShareCarseatInfo shareCarseatInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
         Page<ShareCarseatInfo> page = shareCarseatInfoService.find(new Page<ShareCarseatInfo>(request, response), shareCarseatInfo);
-		return page.getList();
+		return shareCarseatInfoService.shareCarSeatConvertVo(page.getList());
 	}
 
 

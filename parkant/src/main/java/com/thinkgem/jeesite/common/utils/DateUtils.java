@@ -56,6 +56,23 @@ public class DateUtils extends org.apache.commons.lang.time.DateUtils {
 	}
 
 	/**
+	 * 得到日期时间字符串，转换格式（yyyy-MM-dd HH:mm:ss）
+	 */
+	public static Date formatDateTime(String dateString ) {
+		try
+		{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = sdf.parse(dateString);
+			return date;
+		}
+		catch (ParseException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
 	 * 得到当前时间字符串 格式（HH:mm:ss）
 	 */
 	public static String getTime() {
@@ -122,7 +139,7 @@ public class DateUtils extends org.apache.commons.lang.time.DateUtils {
 		long t = new Date().getTime()-date.getTime();
 		return t/(24*60*60*1000);
 	}
-	
+
     
 	public static Date getDateStart(Date date) {
 		if(date==null) {

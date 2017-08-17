@@ -6,7 +6,12 @@ package com.thinkgem.jeesite.modules.terminal.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.modules.terminal.entity.ShareCarseatInfo;
+import com.thinkgem.jeesite.modules.terminal.service.ShareCarseatInfoService;
+import com.thinkgem.jeesite.modules.terminal.vo.OrderVo;
 import com.thinkgem.jeesite.modules.terminal.vo.ReturnVo;
+import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +30,7 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.terminal.entity.OrderInfo;
 import com.thinkgem.jeesite.modules.terminal.service.OrderInfoService;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +44,8 @@ public class OrderInfoController extends BaseController {
 
 	@Autowired
 	private OrderInfoService orderInfoService;
+	@Autowired
+	private ShareCarseatInfoService shareCarseatInfoService;
 
 	/**
 	 * 获取订单详情
@@ -45,12 +53,32 @@ public class OrderInfoController extends BaseController {
 	 */
 	@RequestMapping(value = "get")
 	@ResponseBody
-	public OrderInfo get(@RequestParam(required=false) String id) {
+	public OrderVo get(@RequestParam(required=false) String id) {
 		if (StringUtils.isNotBlank(id)){
-			return orderInfoService.get(id);
+			return orderInfoService.orderConvertVo(orderInfoService.get(id));
 		}else{
-			return new OrderInfo();
+			return new OrderVo();
 		}
+	}
+
+	/**
+	 * 查询用户预订订单
+	 */
+	@RequestMapping(value = "byUid")
+	@ResponseBody
+	public ReturnVo byUid(@RequestParam(required=false) String uid) {
+		OrderInfo orderInfo=orderInfoService.findByUid(uid);
+		ReturnVo returnVo=new ReturnVo();
+		if(orderInfo!=null){
+			returnVo.setSuccess("true");
+			returnVo.setObject(orderInfoService.orderConvertVo(orderInfo));
+			return returnVo;
+		}else{
+			returnVo.setSuccess("false");
+			returnVo.setReason("用户目前没有预订单");
+			return returnVo;
+		}
+
 	}
 	/**
 	 * 查询订单列表
@@ -58,22 +86,52 @@ public class OrderInfoController extends BaseController {
 	 */
 	@RequestMapping(value = "list")
 	@ResponseBody
-	public List<OrderInfo> list(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
+	public List<OrderVo> list(OrderInfo orderInfo, HttpServletRequest request, HttpServletResponse response, Model model) {
         Page<OrderInfo> page = orderInfoService.find(new Page<OrderInfo>(request, response), orderInfo);
-		return page.getList();
+		return orderInfoService.orderConvertVo(page.getList());
 	}
 
 	/**
-	 * 创建订单
+	 * 预定共享车位订单
 	 * @param orderInfo
 	 */
 	@RequestMapping(value = "create")
 	@ResponseBody
-	public ReturnVo create(OrderInfo orderInfo, Model model, RedirectAttributes redirectAttributes) {
-		orderInfoService.save(orderInfo);
+	public ReturnVo create(OrderInfo orderInfo,String startDate,String endDate, Model model, RedirectAttributes redirectAttributes) {
 		ReturnVo returnVo=new ReturnVo();
+		OrderInfo order=orderInfoService.findByUid(orderInfo.getUse().getId());
+		if(order!=null){
+			returnVo.setSuccess("false");
+			returnVo.setReason("发布失败:您有订单尚未处理完成");
+			return returnVo;
+		}
+		orderInfo.setStartTime(new Date(startDate));
+		orderInfo.setEndTime(new Date(endDate));
+		orderInfo.setStatus("预订中");
+		orderInfoService.save(orderInfo);
 		returnVo.setSuccess("true");
 		returnVo.setReason("发布成功");
+		return returnVo;
+	}
+
+	/**
+	 * 用户订单上锁
+	 */
+	@RequestMapping(value = "carSeatLock")
+	@ResponseBody
+	public ReturnVo carSeatLock(String id) {
+		OrderInfo orderInfo=orderInfoService.get(id);
+		orderInfo.setLeaveTime(new Date());
+		orderInfo.setStatus("已完成");
+		orderInfo.setPayMoney("60");
+		orderInfoService.save(orderInfo);
+
+		orderInfo.getShareCarseatInfo().setDelFlag(ShareCarseatInfo.DEL_FLAG_DELETE);
+		shareCarseatInfoService.save(orderInfo.getShareCarseatInfo());
+
+		ReturnVo returnVo=new ReturnVo();
+		returnVo.setSuccess("true");
+		returnVo.setReason("操作成功");
 		return returnVo;
 	}
 

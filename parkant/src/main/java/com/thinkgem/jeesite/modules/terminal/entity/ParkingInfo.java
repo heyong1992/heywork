@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.terminal.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -45,7 +46,38 @@ public class ParkingInfo extends IdEntity<ParkingInfo> {
 	 */ 
 	private String address;
 
+	/**
+	 * 图片地址
+	 */
+	private String image;
 
+	/**
+	 * 支付方式
+	 */
+	@Column(name="pay_type")
+	private String payType;
+
+	/**
+	 * 免费停留时间(分钟)
+	 */
+	@Column(name="free_time")
+	private String freeTime;
+
+	/**
+	 * 剩余车位个数
+	 */
+	private Integer carSeatCount;
+
+	/**
+	 * 距离  单位/KM
+	 */
+	private String distance;
+
+	/**
+	 * 地上还是地下
+	 */
+	@Column(name="location_type")
+	private String locationType;
 
 	public ParkingInfo() {
 		super();
@@ -103,6 +135,54 @@ public class ParkingInfo extends IdEntity<ParkingInfo> {
 	}
 
 
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public String getPayType() {
+		return payType;
+	}
+
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
+
+	public String getFreeTime() {
+		return freeTime;
+	}
+
+	public void setFreeTime(String freeTime) {
+		this.freeTime = freeTime;
+	}
+
+	public String getLocationType() {
+		return locationType;
+	}
+
+	public void setLocationType(String locationType) {
+		this.locationType = locationType;
+	}
+
+	@Transient
+	public Integer getCarSeatCount() {
+		return carSeatCount;
+	}
+
+	public void setCarSeatCount(Integer carSeatCount) {
+		this.carSeatCount = carSeatCount;
+	}
 
 
+	@Transient
+	public String getDistance() {
+		return distance;
+	}
+
+	public void setDistance(String distance) {
+		this.distance = distance;
+	}
 }

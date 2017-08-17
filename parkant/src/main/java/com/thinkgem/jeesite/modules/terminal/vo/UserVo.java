@@ -15,6 +15,12 @@ public class UserVo {
 
     private String name;
 
+    private String phone;
+
+    private String image;
+
+    private String carNums;
+
     public String getSuccess() {
         return success;
     }
@@ -53,5 +59,29 @@ public class UserVo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getCarNums() {
+        return carNums;
+    }
+
+    public void setCarNums(String carNums) {
+        this.carNums = carNums;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

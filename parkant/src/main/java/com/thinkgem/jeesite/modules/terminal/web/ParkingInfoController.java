@@ -6,7 +6,7 @@ package com.thinkgem.jeesite.modules.terminal.web;
 
 import com.thinkgem.jeesite.modules.terminal.entity.CarSeatInfo;
 import com.thinkgem.jeesite.modules.terminal.service.CarSeatInfoService;
-import com.thinkgem.jeesite.modules.terminal.vo.CarSeatVo;
+import com.thinkgem.jeesite.modules.terminal.service.ShareCarseatInfoService;
 import com.thinkgem.jeesite.modules.terminal.vo.ReturnVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,7 +34,7 @@ import java.util.Map;
  * @version 2017-08-12
  */
 @Controller
-@RequestMapping(value = "${adminPath}/terminal/parkingInfo")
+@RequestMapping(value = "${adminPath}/terminal/parking")
 public class ParkingInfoController extends BaseController {
 
 	@Autowired
@@ -42,6 +42,9 @@ public class ParkingInfoController extends BaseController {
 
 	@Autowired
 	private CarSeatInfoService carSeatInfoService;
+
+	@Autowired
+	private ShareCarseatInfoService shareCarseatInfoService;
 
 	@ModelAttribute
 	public ParkingInfo get(@RequestParam(required=false) String id) {
@@ -58,11 +61,17 @@ public class ParkingInfoController extends BaseController {
 	 * @param lat 纬度
 	 */
 	@RequestMapping(value = "list")
+
+
 	@ResponseBody
 	public ReturnVo list(String lot, String lat, HttpServletRequest request, HttpServletResponse response) {
 		ReturnVo returnVo=new ReturnVo();
         Page<ParkingInfo> page = parkingInfoService.find(new Page<ParkingInfo>(request, response), null);
 		returnVo.setList(page.getList());
+		for(ParkingInfo parkingInfo:page.getList()){
+			Integer carSeatCount=shareCarseatInfoService.findByParking(parkingInfo.getId(),null).size();
+			parkingInfo.setCarSeatCount(carSeatCount);
+		}
 		return returnVo;
 	}
 
@@ -89,10 +98,16 @@ public class ParkingInfoController extends BaseController {
 	/**
 	 * 车位录入
 	 */
-	@RequestMapping(value = "carseatCreate",method=RequestMethod.POST)
+	@RequestMapping(value = "carSeatCreate",method=RequestMethod.POST)
 	@ResponseBody
-	public ReturnVo carseatCreate(CarSeatInfo carSeatInfo, Model model) {
+	public ReturnVo carSeatCreate(CarSeatInfo carSeatInfo) {
 		ReturnVo returnVo=new ReturnVo();
+		CarSeatInfo carSeatInfo1=carSeatInfoService.findByPuid(carSeatInfo);
+		if(carSeatInfo1!=null){
+			returnVo.setSuccess("false");
+			returnVo.setReason("录入失败：车位已录入或该设备已被绑定");
+			return returnVo;
+		}
 		carSeatInfoService.save(carSeatInfo);
 		returnVo.setSuccess("true");
 		returnVo.setReason("入驻成功");
@@ -107,10 +122,18 @@ public class ParkingInfoController extends BaseController {
 	@ResponseBody
 	public ReturnVo carSeatList(CarSeatInfo carSeatInfo, HttpServletRequest request, HttpServletResponse response) {
 		ReturnVo returnVo=new ReturnVo();
-		Page<CarSeatInfo> page = carSeatInfoService.find(new Page<CarSeatInfo>(request, response), carSeatInfo);
-		CarSeatVo carSeatVo=new CarSeatVo();
-		returnVo.setList(page.getList());
-		return returnVo;
+		try{
+			Page<CarSeatInfo> page = carSeatInfoService.find(new Page<CarSeatInfo>(request, response), carSeatInfo);
+			returnVo.setList(carSeatInfoService.carSeatInfoConvertVo(page.getList()));
+			return returnVo;
+		}catch (Exception e){
+			returnVo.setSuccess("false");
+			returnVo.setReason("系统内部错误,请联系管理员");
+			return returnVo;
+
+		}
+
+
 	}
 
 	/**

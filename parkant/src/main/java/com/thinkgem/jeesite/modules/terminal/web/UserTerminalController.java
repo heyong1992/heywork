@@ -5,6 +5,7 @@ import com.thinkgem.jeesite.modules.sys.entity.Office;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.modules.terminal.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,14 +52,37 @@ public class UserTerminalController extends BaseController {
     /**
      * 用户登录
      */
+    @RequestMapping("update")
+    @ResponseBody
+    public UserVo update() {
+        User u = UserUtils.getUser();
+        UserVo userVo=new UserVo();
+        userVo.setId(u.getId());
+        userVo.setCarNums(u.getCarNum());
+        userVo.setName(u.getName());
+        userVo.setPhone(u.getPhone());
+        userVo.setImage(u.getImage());
+        userVo.setUsername(u.getLoginName());
+        userVo.setSuccess("true");
+        return userVo;
+    }
+
+    /**
+     * 用户登录
+     */
     @RequestMapping("login")
     @ResponseBody
-    public Map<String,Object> login(User user) {
-        Map<String,Object> map=new HashMap<String, Object>();
+    public UserVo login() {
         User u = UserUtils.getUser();
-        map.put("success",u);
-
-        return map;
+        UserVo userVo=new UserVo();
+        userVo.setId(u.getId());
+        userVo.setCarNums(u.getCarNum());
+        userVo.setName(u.getName());
+        userVo.setPhone(u.getPhone());
+        userVo.setImage(u.getImage());
+        userVo.setUsername(u.getLoginName());
+        userVo.setSuccess("true");
+        return userVo;
     }
 
     @ResponseBody

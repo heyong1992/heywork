@@ -34,7 +34,7 @@ import java.util.List;
  * @version 2017-08-14
  */
 @Controller
-@RequestMapping(value = "${adminPath}/terminal/carSeatInfo")
+@RequestMapping(value = "${adminPath}/terminal/carSeat")
 public class CarSeatInfoController extends BaseController {
 
 	@Autowired

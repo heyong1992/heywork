@@ -66,7 +66,7 @@ public class OrderInfo extends IdEntity<OrderInfo> {
 	/**
 	 *结束时间
 	 */ 
-	private Date endtime;
+	private Date endTime;
 
 
 
@@ -163,15 +163,11 @@ public class OrderInfo extends IdEntity<OrderInfo> {
 	}
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Date getEndtime() {
-		return endtime;
+	public Date getEndTime() {
+		return endTime;
 	}
 
-	public void setEndtime(Date endtime) {
-		this.endtime = endtime;
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
 	}
-
-
-
-
 }

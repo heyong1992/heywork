@@ -15,6 +15,8 @@ import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.modules.terminal.entity.ParkingInfo;
 import com.thinkgem.jeesite.modules.terminal.dao.ParkingInfoDao;
 
+import java.util.List;
+
 /**
  * 停车信息Service
  * @author Hey

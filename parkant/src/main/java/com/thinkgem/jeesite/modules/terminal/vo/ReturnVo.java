@@ -14,6 +14,8 @@ public class ReturnVo {
 
     private List<?> list=new ArrayList<Object>();
 
+    private Object object;
+
     public String getSuccess() {
         return success;
     }
@@ -36,5 +38,13 @@ public class ReturnVo {
 
     public void setList(List<?> list) {
         this.list = list;
+    }
+
+    public Object getObject() {
+        return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
     }
 }
